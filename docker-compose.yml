@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # 1. Le Frontend
+  frontend:
+    build: ./frontend
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    environment:
+      - API_URL=http://api:8000/generate
+
+  # 2. Le Service de "Préparation" (La solution magique)
+  # Ce conteneur se lance en root, change les droits du socket, et s'arrête.
+  init-permissions:
+    image: alpine
+    # La commande qui donne les droits à tout le monde sur le socket
+    command: chmod 666 /var/run/docker.sock
+    user: root
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  # 3. L'API
+  api:
+    build: ./api
+    ports:
+      - "8000:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      # L'API attendra que le "fix" soit terminé avant de se lancer
+      init-permissions:
+        condition: service_completed_successfully
+
+  # 4. Le Worker Builder (inchangé)
+  worker-builder:
+    build: ./worker
+    image: qrcode-worker:latest
+    entrypoint: ["echo", "Image worker construite !"]
+
+networks:
+  default:
+    driver: bridge
