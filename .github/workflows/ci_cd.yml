@@ -1,0 +1,58 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. Récupérer le code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Se connecter à Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 3. Configurer le moteur de build
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 4. Build & Push API
+      - name: Build and push API
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api
+          file: ./api/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/qrcode-api:latest
+            ${{ secrets.DOCKER_USERNAME }}/qrcode-api:${{ github.sha }}
+
+      # 5. Build & Push Frontend
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/qrcode-frontend:latest
+            ${{ secrets.DOCKER_USERNAME }}/qrcode-frontend:${{ github.sha }}
+
+      # 6. Build & Push Worker
+      - name: Build and push Worker
+        uses: docker/build-push-action@v5
+        with:
+          context: ./worker
+          file: ./worker/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/qrcode-worker:latest
+            ${{ secrets.DOCKER_USERNAME }}/qrcode-worker:${{ github.sha }}
