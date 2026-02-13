@@ -56,3 +56,14 @@ jobs:
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/qrcode-worker:latest
             ${{ secrets.DOCKER_USERNAME }}/qrcode-worker:${{ github.sha }}
+      
+      # 7. SÉCURITÉ : Scan de vulnérabilités et SBOM (Requis PDF)
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ secrets.DOCKER_USERNAME }}/qrcode-api:latest'
+          format: 'table'
+          exit-code: '0' # On ne bloque pas le pipeline même s'il y a des failles (pour l'instant)
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
