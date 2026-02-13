@@ -33,7 +33,7 @@ docker compose up --build
 
 ### Accès
 
-* **Application Web** : [http://localhost:8501]
+* **Application Web** : [http://localhost:8501](http://localhost:8501)
 * **Documentation API (Swagger)** : [http://localhost:8000/docs]
 * **Healthcheck** : [http://localhost:8000/health]
 
