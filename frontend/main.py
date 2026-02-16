@@ -101,14 +101,38 @@ st.markdown("""
     .stSlider > div > div > div > div {
         background: #111827 !important;
     }
+    
+    /* Pulse animation for status dot */
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    .pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
     </style>
 """, unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────
-# 3. HEADER - PURE MARKDOWN
+# 3. HEADER WITH DYNAMIC HEALTH CHECK
 # ─────────────────────────────────────────────
-st.markdown("""
+# Check API health status
+HEALTH_URL = os.environ.get("API_URL", "http://localhost:8000").replace("/generate", "/health")
+
+try:
+    health_response = requests.get(HEALTH_URL, timeout=2)
+    if health_response.status_code == 200 and health_response.json().get("status") == "ok":
+        status_color = "#10B981"  # Green
+        status_text = "All systems operational"
+    else:
+        status_color = "#F59E0B"  # Orange
+        status_text = "API degraded"
+except:
+    status_color = "#EF4444"  # Red
+    status_text = "API unavailable"
+
+st.markdown(f"""
     <div style="text-align: center; margin-bottom: 2rem;">
         <div style="display: inline-flex; align-items: center; gap: 12px; margin-bottom: 1rem;">
             <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #111827, #374151); 
@@ -120,8 +144,8 @@ st.markdown("""
                          border-radius: 100px; letter-spacing: 1px;">DEVOPS</span>
         </div>
         <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 1.5rem;">
-            <div style="width: 7px; height: 7px; border-radius: 50%; background: #10B981;"></div>
-            <span style="font-size: 0.75rem; font-weight: 600; color: #6B7280;">All systems operational</span>
+            <div class="pulse" style="width: 7px; height: 7px; border-radius: 50%; background: {status_color};"></div>
+            <span style="font-size: 0.75rem; font-weight: 600; color: #6B7280;">{status_text}</span>
         </div>
     </div>
 """, unsafe_allow_html=True)
