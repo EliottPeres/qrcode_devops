@@ -13,6 +13,13 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+# Force light theme
+st.markdown("""
+<script>
+    document.documentElement.setAttribute('data-theme', 'light');
+</script>
+""", unsafe_allow_html=True)
+
 # 2. MINIMAL CSS - ONLY ESSENTIALS
 st.markdown("""
     <style>
@@ -168,12 +175,7 @@ error_correction = st.selectbox(
 )
 
 st.markdown("""
-| Level | Recovery Rate |
-|:-----:|:-------------:|
-| **L** | 7% Recovery   |
-| **M** | 15% Recovery  |
-| **Q** | 25% Recovery  |
-| **H** | 30% Recovery  |
+**L** — 7% Recovery | **M** — 15% Recovery | **Q** — 25% Recovery | **H** — 30% Recovery
 """)
 
 st.markdown("")
@@ -259,6 +261,17 @@ if generate_btn:
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; margin-top: 2rem;">
+    <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem;">
+        <a href="http://localhost" target="_blank" style="font-size: 0.7rem; font-weight: 600; color: #111827; 
+                     background: rgba(17, 24, 39, 0.08); padding: 4px 12px; 
+                     border-radius: 100px; border: 1px solid rgba(17, 24, 39, 0.12); text-decoration: none;">🌐 Web App</a>
+        <a href="http://localhost/api/docs" target="_blank" style="font-size: 0.7rem; font-weight: 600; color: #111827; 
+                     background: rgba(17, 24, 39, 0.08); padding: 4px 12px; 
+                     border-radius: 100px; border: 1px solid rgba(17, 24, 39, 0.12); text-decoration: none;">📚 API Docs</a>
+        <a href="http://localhost/api/health" target="_blank" style="font-size: 0.7rem; font-weight: 600; color: #111827; 
+                     background: rgba(17, 24, 39, 0.08); padding: 4px 12px; 
+                     border-radius: 100px; border: 1px solid rgba(17, 24, 39, 0.12); text-decoration: none;">✓ Health</a>
+    </div>
     <div style="display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;">
         <span style="font-size: 0.7rem; font-weight: 600; color: #9CA3AF; 
                      background: rgba(156, 163, 175, 0.08); padding: 4px 12px; 
@@ -272,12 +285,7 @@ st.markdown("""
         <span style="font-size: 0.7rem; font-weight: 600; color: #9CA3AF; 
                      background: rgba(156, 163, 175, 0.08); padding: 4px 12px; 
                      border-radius: 100px; border: 1px solid rgba(156, 163, 175, 0.12);">GitHub Actions</span>
-        <span style="font-size: 0.7rem; font-weight: 600; color: #9CA3AF; 
-                     background: rgba(156, 163, 175, 0.08); padding: 4px 12px; 
-                     border-radius: 100px; border: 1px solid rgba(156, 163, 175, 0.12);">Trivy</span>
-        <span style="font-size: 0.7rem; font-weight: 600; color: #9CA3AF; 
-                     background: rgba(156, 163, 175, 0.08); padding: 4px 12px; 
-                     border-radius: 100px; border: 1px solid rgba(156, 163, 175, 0.12);">CycloneDX</span>
+       
     </div>
     <div style="font-size: 0.7rem; color: #C4C9D4; font-weight: 500;">
         JUNIA 2026 — M2 Project · V. Damery · H. Many · E. Peres
