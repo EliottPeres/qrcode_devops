@@ -59,7 +59,7 @@ def generate_qr(request: UrlRequest):
 
         # Nom de l'image worker (peut être surchargé par variable d'env)
         # Note: Assure-toi que cette image existe localement ou sur le Hub
-        worker_image = os.getenv("WORKER_IMAGE", "qrcode-worker:latest")
+        worker_image = os.getenv("WORKER_IMAGE", "qrcode-worker:1.0.0")
 
         # 1. Lancement du conteneur Worker
         container = client.containers.run(
