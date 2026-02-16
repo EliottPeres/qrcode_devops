@@ -1,11 +1,13 @@
+version: "3.8"
+
 services:
-  # --- Reverse Proxy (The orchestration gateway) ---
+  # --- Reverse Proxy (Gateway) ---
   nginx:
-    image: nginx:alpine
+    image: nginx:1.27-alpine
     container_name: gateway
     restart: unless-stopped
     ports:
-      - "80:80"  # Only port 80 is exposed to the outside world
+      - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
@@ -16,23 +18,21 @@ services:
 
   # --- Frontend ---
   frontend:
-    build: 
+    build:
       context: ./frontend
     container_name: frontend
-    # ports:        <-- REMOVED (No direct access to port 8501)
-    #   - "8501:8501" 
-    environment:
-      - API_URL=http://api:8000/generate # Internal Docker communication
+    env_file:
+      - .env
     networks:
       - app-network
 
   # --- API ---
   api:
-    build: 
+    build:
       context: ./api
     container_name: api
-    # ports:        <-- REMOVED (No direct access to port 8000)
-    #   - "8000:8000"
+    env_file:
+      - .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
@@ -41,14 +41,26 @@ services:
     networks:
       - app-network
 
-  # --- Init Container (Unchanged) ---
+  # --- Init permissions (socket) ---
   init-permissions:
-    image: busybox
+    image: busybox:1.36
     container_name: init-permissions
     command: sh -c "chmod 666 /var/run/docker.sock"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     user: root
+
+  # --- Worker (pas lancé par défaut) ---
+  worker:
+    build:
+      context: ./worker
+    image: qrcode-worker:1.0.0
+    profiles: ["manual"]
+    restart: "no"
+    env_file:
+      - .env
+    networks:
+      - app-network
 
 networks:
   app-network:
