@@ -6,14 +6,14 @@ import tarfile
 import os
 
 app = FastAPI()
-client = docker.from_env() # Connexion au Docker local
+client = docker.from_env()  # Connect to local Docker daemon
 
 class UrlRequest(BaseModel):
     url: str
 
 @app.get("/health")
 def health_check():
-    # Permet à Docker de vérifier que l'API est en vie
+    # Allows Docker to verify that the API is alive
     return {"status": "ok"}
 
 @app.get("/")
@@ -24,51 +24,51 @@ def root():
 def generate_qr(request: UrlRequest):
     container = None
     try:
-        print(f"🔨 Lancement du worker pour : {request.url}")
+        print(f"Launching worker for: {request.url}")
         
-        # 1. Lancer le conteneur Worker
-        # On lui passe l'URL via la variable d'environnement définie dans le worker.py
+        # 1. Launch the Worker container
+        # Pass the URL via environment variable as defined in worker.py
         container = client.containers.run(
             image="qrcode-worker:latest",
             environment={"URL_TO_GENERATE": request.url},
-            detach=True,       # On le lance en arrière-plan
-            mem_limit="128m"   # Sécurité : on limite la mémoire (Bonne pratique)
+            detach=True,       # Run in background
+            mem_limit="128m"   # Security: limit memory usage (best practice)
         )
         
-        # 2. Attendre qu'il finisse (exit code 0)
+        # 2. Wait for container to finish (exit code 0)
         container.wait()
         
-        # 3. Récupérer le fichier 'qrcode.png' depuis le dossier '/app' du conteneur
-        # Docker renvoie un flux TAR (archive), pas le fichier direct
+        # 3. Retrieve 'qrcode.png' file from '/app' directory in the container
+        # Docker returns a TAR stream (archive), not the direct file
         bits, stat = container.get_archive("/app/qrcode.png")
         
-        # 4. Lire le flux en mémoire
+        # 4. Read the stream into memory
         file_obj = io.BytesIO()
         for chunk in bits:
             file_obj.write(chunk)
         file_obj.seek(0)
         
-        # 5. Extraire l'image du TAR
+        # 5. Extract the image from the TAR archive
         with tarfile.open(fileobj=file_obj) as tar:
             member = tar.getmember("qrcode.png")
             img_data = tar.extractfile(member).read()
             
-        print("✅ Image récupérée avec succès !")
+        print("Image retrieved successfully")
         
-        # 6. Renvoyer l'image directement au front (format PNG)
+        # 6. Return the image directly to frontend (PNG format)
         return Response(content=img_data, media_type="image/png")
 
     except docker.errors.ImageNotFound:
-        raise HTTPException(status_code=500, detail="L'image 'qrcode-worker' est introuvable. Avez-vous fait le build ?")
+        raise HTTPException(status_code=500, detail="Image 'qrcode-worker' not found. Did you run the build?")
     except Exception as e:
-        print(f"❌ Erreur : {e}")
+        print(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
         
     finally:
-        # 7. NETTOYAGE : Toujours supprimer le conteneur, même en cas d'erreur
+        # 7. CLEANUP: Always remove the container, even on error
         if container:
             try:
                 container.remove(force=True)
-                print("🧹 Conteneur nettoyé.")
+                print("Container cleaned up")
             except:
                 pass

@@ -4,7 +4,7 @@ from PIL import Image
 import io
 import os
 
-# 1. CONFIGURATION DE LA PAGE
+# 1. PAGE CONFIGURATION
 st.set_page_config(
     page_title="QR Gen - DevOps",
     page_icon="📱",
@@ -12,15 +12,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. STYLE CSS PERSONNALISÉ (C'est ici que ça change)
+# 2. CUSTOM CSS STYLING
 st.markdown("""
     <style>
-    /* Fond global de l'application */
+    /* Global application background */
     .stApp {
         background-color: #f0f2f6;
     }
     
-    /* Titres */
+    /* Titles */
     .main-title {
         font-size: 3rem;
         color: #4B4B4B;
@@ -35,7 +35,7 @@ st.markdown("""
         margin-bottom: 30px;
     }
     
-    /* Style du bouton */
+    /* Button styling */
     .stButton>button {
         width: 100%;
         background-color: #FF4B4B;
@@ -51,15 +51,15 @@ st.markdown("""
         color: white;
     }
 
-    /* --- NOUVEAU : Style spécifique pour le champ de texte (Input) --- */
+    /* Specific styling for text input field */
     .stTextInput input {
-        background-color: #ffffff !important;  /* Fond BLANC pour l'input */
-        color: #333333 !important;             /* Texte gris foncé */
-        border: 2px solid #e0e0e0 !important;  /* Bordure légère */
-        border-radius: 8px !important;         /* Coins arrondis */
+        background-color: #ffffff !important;  /* WHITE background for input */
+        color: #333333 !important;             /* Dark grey text */
+        border: 2px solid #e0e0e0 !important;  /* Light border */
+        border-radius: 8px !important;         /* Rounded corners */
     }
     
-    /* Changement de couleur de la bordure quand on clique dedans (Focus) */
+    /* Border color change on focus */
     .stTextInput input:focus {
         border-color: #FF4B4B !important;
         box-shadow: 0 0 5px rgba(255, 75, 75, 0.5) !important;
@@ -70,12 +70,12 @@ st.markdown("""
 # 3. SIDEBAR
 with st.sidebar:
     st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png", width=100)
-    st.title("À propos")
+    st.title("About")
     st.info(
         """
-        Ce projet est une démonstration **DevOps** complète.
+        This project is a complete **DevOps** demonstration.
         
-        **Technologies :**
+        **Technologies:**
         * 🐳 Docker & Compose
         * 🐍 FastAPI & Python
         * 🎨 Streamlit
@@ -83,29 +83,29 @@ with st.sidebar:
         """
     )
     st.markdown("---")
-    st.write("© 2026 - Projet M2")
+    st.write("© 2026 - M2 Project")
 
-# 4. CONTENU PRINCIPAL
-st.markdown('<div class="main-title">Générateur QR Code</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub-title">Transformez vos URLs en images instantanément via notre architecture microservices.</div>', unsafe_allow_html=True)
+# 4. MAIN CONTENT
+st.markdown('<div class="main-title">QR Code Generator</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-title">Transform your URLs into images instantly via our microservices architecture.</div>', unsafe_allow_html=True)
 
-# Zone de saisie
+# Input area
 with st.container():
     col1, col2, col3 = st.columns([1, 6, 1])
     with col2:
-        # Le champ qui aura maintenant un fond blanc
-        url_input = st.text_input("Collez votre URL ici :", "https://youtube.com")
+        # Input field with white background
+        url_input = st.text_input("Paste your URL here:", "https://youtube.com")
         
-        generate_btn = st.button("🚀 Générer mon QR Code")
+        generate_btn = st.button("🚀 Generate QR Code")
 
-# Logique de l'API
+# API logic
 API_URL = os.environ.get("API_URL", "http://localhost:8000/generate")
 
 if generate_btn:
     if url_input:
         col1, col2, col3 = st.columns([1, 2, 1])
         with col2:
-            with st.spinner('🏗️ Le worker Docker construit votre image...'):
+            with st.spinner('🏗️ Docker worker is building your image...'):
                 try:
                     response = requests.post(API_URL, json={"url": url_input})
                     
@@ -113,21 +113,21 @@ if generate_btn:
                         image_data = response.content
                         image = Image.open(io.BytesIO(image_data))
                         
-                        st.success("✅ QR Code généré avec succès !")
+                        st.success("✅ QR Code generated successfully!")
                         
                         st.image(image, use_container_width=True)
                         
                         st.download_button(
-                            label="📥 Télécharger l'image",
+                            label="📥 Download image",
                             data=image_data,
                             file_name="qrcode.png",
                             mime="image/png",
                             use_container_width=True
                         )
                     else:
-                        st.error(f"❌ Erreur API : {response.status_code}")
+                        st.error(f"❌ API Error: {response.status_code}")
                         
                 except Exception as e:
-                    st.error(f"🚨 Impossible de contacter l'API. Vérifiez Docker.")
+                    st.error(f"🚨 Unable to contact API. Please check Docker.")
     else:
-        st.warning("⚠️ Veuillez entrer une URL valide.")
+        st.warning("⚠️ Please enter a valid URL.")

@@ -1,28 +1,27 @@
-# Image de base légère
+# Lightweight base image
 FROM python:3.10-slim
 
-# Création d'un utilisateur non-root (Sécurité) [cite: 14]
+# Create a non-root user for security
 RUN useradd -m apiuser
 
 WORKDIR /app
 
-# Installation des dépendances
+# Install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copie du code source
+# Copy source code
 COPY main.py .
 
-# Changement des droits pour l'utilisateur
+# Change ownership to the non-root user
 RUN chown -R apiuser:apiuser /app
 
-# On passe sur l'utilisateur sécurisé
+# Switch to the secure user
 USER apiuser
 
-# HEALTHCHECK (Obligatoire PDF) [cite: 15]
-# Vérifie toutes les 30s si /health répond bien
+# HEALTHCHECK: Verifies every 30s that /health endpoint responds correctly
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8000/health || exit 1
 
-# Lancement de l'API
+# Start the API
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

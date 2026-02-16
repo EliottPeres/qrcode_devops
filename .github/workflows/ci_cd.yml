@@ -9,22 +9,22 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      # 1. Récupérer le code
+      # 1. Checkout the repository code
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Se connecter à Docker Hub
+      # 2. Authenticate to Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # 3. Configurer le moteur de build
+      # 3. Configure Docker build engine
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # 4. Build & Push API
+      # 4. Build & Push API image
       - name: Build and push API
         uses: docker/build-push-action@v5
         with:
@@ -35,7 +35,7 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/qrcode-api:latest
             ${{ secrets.DOCKER_USERNAME }}/qrcode-api:${{ github.sha }}
 
-      # 5. Build & Push Frontend
+      # 5. Build & Push Frontend image
       - name: Build and push Frontend
         uses: docker/build-push-action@v5
         with:
@@ -46,7 +46,7 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/qrcode-frontend:latest
             ${{ secrets.DOCKER_USERNAME }}/qrcode-frontend:${{ github.sha }}
 
-      # 6. Build & Push Worker
+      # 6. Build & Push Worker image
       - name: Build and push Worker
         uses: docker/build-push-action@v5
         with:
@@ -57,28 +57,28 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/qrcode-worker:latest
             ${{ secrets.DOCKER_USERNAME }}/qrcode-worker:${{ github.sha }}
       
-      # 7. SÉCURITÉ : Scan de vulnérabilités et SBOM (Requis PDF)
+      # 7. SECURITY: Vulnerability scanning with Trivy (Required by specifications)
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: '${{ secrets.DOCKER_USERNAME }}/qrcode-api:latest'
           format: 'table'
-          exit-code: '0' # On ne bloque pas le pipeline même s'il y a des failles (pour l'instant)
+          exit-code: '0' # Do not fail the pipeline on vulnerabilities (for now)
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
 
-      # 8. GÉNÉRATION SBOM : Création du fichier d'inventaire (Requis PDF)
+      # 8. SBOM GENERATION: Create software inventory file (Required by specifications)
       - name: Generate SBOM
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: '${{ secrets.DOCKER_USERNAME }}/qrcode-api:latest'
-          format: 'cyclonedx'      # Format standard pour les SBOM
-          output: 'sbom.json'      # Nom du fichier de sortie
+          format: 'cyclonedx'      # Standard format for Software Bill of Materials
+          output: 'sbom.json'      # Output file name
 
-      # 9. SAUVEGARDE : Rendre le fichier téléchargeable sur GitHub
+      # 9. ARTIFACT STORAGE: Make the SBOM file downloadable from GitHub Actions
       - name: Upload SBOM Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sbom-qrcode-api    # Nom du bouton de téléchargement
-          path: sbom.json          # Le fichier à télécharger
+          name: sbom-qrcode-api    # Artifact name in the GitHub UI
+          path: sbom.json          # File to upload
