@@ -285,7 +285,12 @@ st.markdown("""
         <span style="font-size: 0.7rem; font-weight: 600; color: #9CA3AF; 
                      background: rgba(156, 163, 175, 0.08); padding: 4px 12px; 
                      border-radius: 100px; border: 1px solid rgba(156, 163, 175, 0.12);">GitHub Actions</span>
-       
+        <span style="font-size: 0.7rem; font-weight: 600; color: #9CA3AF; 
+                     background: rgba(156, 163, 175, 0.08); padding: 4px 12px; 
+                     border-radius: 100px; border: 1px solid rgba(156, 163, 175, 0.12);">Trivy</span>
+        <span style="font-size: 0.7rem; font-weight: 600; color: #9CA3AF; 
+                     background: rgba(156, 163, 175, 0.08); padding: 4px 12px; 
+                     border-radius: 100px; border: 1px solid rgba(156, 163, 175, 0.12);">CycloneDX</span>
     </div>
     <div style="font-size: 0.7rem; color: #C4C9D4; font-weight: 500;">
         JUNIA 2026 — M2 Project · V. Damery · H. Many · E. Peres
