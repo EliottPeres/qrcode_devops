@@ -30,9 +30,9 @@ docker compose up --build
 
 ### Access
 
-* **Web Application**: [http://localhost:8501](http://localhost:8501)
-* **API Documentation (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
-* **Healthcheck**: [http://localhost:8000/health](http://localhost:8000/health)
+* **Web Application**: [http://localhost](http://localhost)
+* **API Documentation (Swagger)**: [http://localhost/api/docs](http://localhost/api/docs)
+* **Healthcheck**: [http://localhost/api/health](http://localhost/api/health)
 
 ---
 
