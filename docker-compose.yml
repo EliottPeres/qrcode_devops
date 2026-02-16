@@ -1,11 +1,11 @@
 services:
-  # --- Reverse Proxy (Le nouveau chef d'orchestre) ---
+  # --- Reverse Proxy (The orchestration gateway) ---
   nginx:
     image: nginx:alpine
     container_name: gateway
     restart: unless-stopped
     ports:
-      - "80:80"  # Seul le port 80 est ouvert vers l'extérieur
+      - "80:80"  # Only port 80 is exposed to the outside world
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
@@ -19,10 +19,10 @@ services:
     build: 
       context: ./frontend
     container_name: frontend
-    # ports:        <-- ON RETIRE CECI (Plus d'accès direct au 8501)
+    # ports:        <-- REMOVED (No direct access to port 8501)
     #   - "8501:8501" 
     environment:
-      - API_URL=http://api:8000/generate # Communication interne Docker
+      - API_URL=http://api:8000/generate # Internal Docker communication
     networks:
       - app-network
 
@@ -31,7 +31,7 @@ services:
     build: 
       context: ./api
     container_name: api
-    # ports:        <-- ON RETIRE CECI (Plus d'accès direct au 8000)
+    # ports:        <-- REMOVED (No direct access to port 8000)
     #   - "8000:8000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -41,7 +41,7 @@ services:
     networks:
       - app-network
 
-  # --- Init Container (Reste inchangé) ---
+  # --- Init Container (Unchanged) ---
   init-permissions:
     image: busybox
     container_name: init-permissions
