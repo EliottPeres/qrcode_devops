@@ -12,6 +12,40 @@ The application is built on a containerized 3-tier architecture:
 2. **API (FastAPI)**: Orchestrator that receives requests and controls the Docker engine.
 3. **Worker (Python)**: Ephemeral container launched on-demand by the API to generate QR Codes (Docker-out-of-Docker pattern).
 
+### Architecture Diagram
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     User Browser                            │
+│                  (http://localhost)                         │
+└────────────────────────────────┬────────────────────────────┘
+                                 │
+                                 ▼
+         ┌──────────────────────────────────────────┐
+         │           Nginx Reverse Proxy            │
+         │         (Port 80 / Gateway)              │
+         └──────────────┬──────────────┬────────────┘
+                        │              │
+            ┌───────────▼─┐        ┌───▼────────────┐
+            │  Frontend   │        │      API       │
+            │ (Streamlit) │        │   (FastAPI)    │
+            │  Port 8501  │        │   Port 8000    │
+            └─────────────┘        └────────┬───────┘
+                                           │
+                          ┌────────────────▼────────────────┐
+                          │   Docker Daemon (Host)          │
+                          │   /var/run/docker.sock          │
+                          └────────────────┬────────────────┘
+                                           │
+                                           │ (launches on-demand)
+                                           ▼
+                          ┌────────────────────────────────┐
+                          │   Worker Container (QR Gen)    │
+                          │   (Ephemeral - runs once)      │
+                          │   Memory limit: 128MB           │
+                          └────────────────────────────────┘
+```
+
 ---
 
 ## Quick Start
