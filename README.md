@@ -113,16 +113,28 @@ The project includes a complete automation pipeline (`.github/workflows/ci-cd.ym
 ## Project Structure
 
 ```text
-.
-├── api/                # FastAPI Backend (Orchestrator)
-│   ├── Dockerfile      # Secure Docker configuration (Non-root + Healthcheck)
-│   └── main.py         # API logic and Docker communication
-├── frontend/           # Streamlit User Interface
-│   └── Dockerfile      # Docker configuration
-├── worker/             # Image generation script
-│   ├── Dockerfile      # Lightweight image for ephemeral workers
-│   └── worker.py       # QR Code creation logic
-├── .github/workflows/  # CI/CD configuration (Build, Test, Scan, Push)
-├── docker-compose.yml  # Global stack orchestration
-└── README.md           # Documentation
+qrcode_projet/
+├── .github/
+│   └── workflows/
+│       └── ci_cd.yml           # CI/CD pipeline configuration
+├── api/                         # FastAPI Backend (Orchestrator)
+│   ├── __pycache__/             # Python cache
+│   ├── Dockerfile               # Secure Docker configuration
+│   ├── main.py                  # API logic and Docker communication
+│   └── requirements.txt          # Python dependencies
+├── frontend/                     # Streamlit User Interface
+│   ├── Dockerfile               # Docker configuration
+│   ├── main.py                  # Streamlit app
+│   └── requirements.txt          # Python dependencies
+├── nginx/                        # Reverse Proxy Gateway
+│   └── nginx.conf               # Nginx routing configuration
+├── worker/                       # QR Code Generator (Ephemeral)
+│   ├── Dockerfile               # Lightweight image for worker
+│   ├── requirements.txt          # Python dependencies
+│   └── worker.py                # QR Code generation logic
+├── .env                          # Environment configuration (optional)
+├── .gitignore                    # Git ignore rules
+├── docker-compose.yml            # Services orchestration
+├── qrcode.png                    # Generated QR code example
+└── README.md                     # Documentation (this file)
 ```
