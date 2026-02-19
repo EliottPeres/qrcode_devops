@@ -1,24 +1,24 @@
-# On utilise une image python légère
+# Use a lightweight python image
 FROM python:3.10-slim
 
-# On crée un utilisateur 'appuser' pour ne pas être root (Sécurité PDF)
+# Create an 'appuser' user to avoid running as root (Security requirement)
 RUN useradd -m appuser
 
-# On définit le dossier de travail
+# Set working directory
 WORKDIR /app
 
-# On installe les dépendances en tant que root
+# Install dependencies as root
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# On copie le code
+# Copy code
 COPY worker.py .
 
-# IMPORTANT : On change le propriétaire des fichiers pour l'utilisateur non-root
+# IMPORTANT: Change file ownership to the non-root user
 RUN chown -R appuser:appuser /app
 
-# On passe sur l'utilisateur sécurisé
+# Switch to secure user
 USER appuser
 
-# Commande de lancement
+# Launch command
 CMD ["python", "worker.py"]
