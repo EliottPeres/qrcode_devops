@@ -72,15 +72,23 @@ docker compose up --build
 
 ## Key Features & DevOps Choices
 
-### 1. Orchestration & Docker-out-of-Docker (DooD)
+### 1. Reverse Proxy with Nginx
+
+The project uses **Nginx** as a reverse proxy gateway (port 80) to route requests to the appropriate services:
+- Requests to `/` are forwarded to the **Frontend** (Streamlit)
+- Requests to `/api` are forwarded to the **API** (FastAPI)
+
+This provides a single entry point for users, unifies the application under one domain, and allows for advanced routing, caching, and security policies.
+
+### 2. Orchestration & Docker-out-of-Docker (DooD)
 
 The API communicates directly with the host machine's Docker daemon via the `/var/run/docker.sock` socket. This allows the API to dynamically launch worker containers for each generation request, ensuring complete task isolation.
 
-### 2. Automatic Permission Management
+### 3. Automatic Permission Management
 
 To avoid permission errors on the Docker socket (common on Linux/macOS), an Init-Container service (`init-permissions`) launches at startup to configure necessary rights, then automatically stops. This ensures smooth deployment on any environment.
 
-### 3. Security (Security by Design)
+### 4. Security (Security by Design)
 
 * **Non-Root Users**: All services (API, Frontend, Worker) run with dedicated users (`apiuser`, `frontuser`, `appuser`) instead of `root`.
 * **Minimal Images**: Uses `python:3.10-slim` images to reduce attack surface and image size.
