@@ -1,6 +1,6 @@
 # Projet DevOps: Distributed QR Code Generator
 
-This project is a microservices application for generating QR Codes on-demand. It demonstrates modern DevOps concepts: advanced containerization, orchestration, continuous integration (CI/CD), and supply chain security.
+This project is a microservices application for generating QR Codes on-demand. It demonstrates modern DevOps concepts: advanced containerization, orchestration, continuous integration (CI/CD).
 
 ---
 
