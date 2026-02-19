@@ -9,7 +9,7 @@ def generate():
     url = os.environ.get("URL_TO_GENERATE")
 
     if not url:
-        print("❌ ERROR: No URL provided in 'URL_TO_GENERATE' variable.")
+        print("ERROR: No URL provided in 'URL_TO_GENERATE' variable.")
         sys.exit(1)
 
     # 2. Retrieve customization options (with defaults)
@@ -28,8 +28,8 @@ def generate():
     }
     error_correction = ec_map.get(error_correction_str.upper(), qrcode.constants.ERROR_CORRECT_M)
 
-    print(f"⚙️  Generating QR Code for: {url}")
-    print(f"   Fill: {fill_color} | Back: {back_color} | Size: {box_size} | Border: {border} | EC: {error_correction_str}")
+    print(f"Generating QR Code for: {url}")
+    print(f"Fill: {fill_color} | Back: {back_color} | Size: {box_size} | Border: {border} | EC: {error_correction_str}")
 
     # 3. Create the QR Code with customization
     qr = qrcode.QRCode(
@@ -48,7 +48,7 @@ def generate():
     output_path = "qrcode.png"
     img.save(output_path)
 
-    print(f"✅ Success! Image saved as: {output_path}")
+    print(f"Success! Image saved as: {output_path}")
 
 if __name__ == "__main__":
     generate()
